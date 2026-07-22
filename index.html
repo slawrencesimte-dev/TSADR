@@ -1,0 +1,1716 @@
+<title>TS-ADR Course Digest — IIM Udaipur</title>
+<style>
+  :root{
+    --ink:#1c2333;
+    --ink-soft:#3a3f52;
+    --paper:#f6f3ec;
+    --paper-raised:#ffffff;
+    --paper-sunk:#eee9dd;
+    --rule:#ddd5c2;
+    --muted:#726b5c;
+    --accent:#8a5a2b;
+    --accent-soft:#f1e3d0;
+    --accent2:#3f6659;
+    --accent2-soft:#e1ece6;
+    --focus:#2f5fa8;
+    --shadow: 0 1px 2px rgba(28,35,51,.06), 0 8px 24px rgba(28,35,51,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#ece7da;
+      --ink-soft:#c9c2ae;
+      --paper:#14161c;
+      --paper-raised:#1b1e26;
+      --paper-sunk:#20232c;
+      --rule:#31353f;
+      --muted:#9c9686;
+      --accent:#d59c5c;
+      --accent-soft:#3a2e1e;
+      --accent2:#7fb39c;
+      --accent2-soft:#1f312b;
+      --focus:#7aa7e0;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#ece7da; --ink-soft:#c9c2ae; --paper:#14161c; --paper-raised:#1b1e26; --paper-sunk:#20232c;
+    --rule:#31353f; --muted:#9c9686; --accent:#d59c5c; --accent-soft:#3a2e1e; --accent2:#7fb39c;
+    --accent2-soft:#1f312b; --focus:#7aa7e0; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
+  }
+  :root[data-theme="light"]{
+    --ink:#1c2333; --ink-soft:#3a3f52; --paper:#f6f3ec; --paper-raised:#ffffff; --paper-sunk:#eee9dd;
+    --rule:#ddd5c2; --muted:#726b5c; --accent:#8a5a2b; --accent-soft:#f1e3d0; --accent2:#3f6659;
+    --accent2-soft:#e1ece6; --focus:#2f5fa8; --shadow: 0 1px 2px rgba(28,35,51,.06), 0 8px 24px rgba(28,35,51,.06);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family: Charter, "Iowan Old Style", "Palatino Linotype", Georgia, "Noto Serif", serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .label{
+    font-family: "Avenir Next", "Century Gothic", "Segoe UI", system-ui, -apple-system, sans-serif;
+    text-transform:uppercase;
+    letter-spacing:.09em;
+    font-weight:600;
+  }
+  a{color:inherit;}
+  a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
+    outline:2px solid var(--focus);
+    outline-offset:3px;
+    border-radius:3px;
+  }
+
+  /* ---------- shell ---------- */
+  .shell{
+    display:grid;
+    grid-template-columns: 260px minmax(0,1fr);
+    max-width:1180px;
+    margin:0 auto;
+  }
+  @media (max-width:920px){
+    .shell{ grid-template-columns: 1fr; }
+  }
+
+  /* ---------- sidebar ---------- */
+  .side{
+    position:sticky;
+    top:0;
+    align-self:start;
+    height:100vh;
+    overflow-y:auto;
+    padding:2.4rem 1.6rem 2rem 0;
+    display:flex;
+    flex-direction:column;
+    gap:1.9rem;
+  }
+  @media (max-width:920px){
+    .side{ position:static; height:auto; padding:1.6rem 1.2rem 0; }
+  }
+  .brand{
+    display:flex;
+    flex-direction:column;
+    gap:.3rem;
+  }
+  .brand .mark{
+    width:34px; height:34px;
+    border:1.5px solid var(--ink);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-family: "Avenir Next","Segoe UI",sans-serif;
+    font-weight:700; font-size:.72rem; letter-spacing:.02em;
+  }
+  .brand .course{
+    font-size:.72rem;
+    color:var(--muted);
+    margin-top:.5rem;
+  }
+  .side nav{
+    display:flex;
+    flex-direction:column;
+    gap:1.4rem;
+  }
+  .side nav .group-title{
+    font-size:.66rem;
+    color:var(--muted);
+    margin-bottom:.55rem;
+  }
+  .side nav ul{
+    list-style:none; margin:0; padding:0;
+    display:flex; flex-direction:column; gap:.35rem;
+  }
+  .side nav a{
+    text-decoration:none;
+    font-family:"Avenir Next","Segoe UI",sans-serif;
+    font-size:.86rem;
+    color:var(--ink-soft);
+    padding:.28rem 0;
+    border-left:2px solid transparent;
+    padding-left:.7rem;
+    display:block;
+    transition: color .15s ease, border-color .15s ease;
+  }
+  .side nav a:hover{ color:var(--accent); border-left-color:var(--rule); }
+  .filters{
+    display:flex; flex-wrap:wrap; gap:.4rem;
+  }
+  .chip{
+    font-family:"Avenir Next","Segoe UI",sans-serif;
+    font-size:.72rem;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    border:1px solid var(--rule);
+    background:var(--paper-raised);
+    color:var(--ink-soft);
+    padding:.38rem .7rem;
+    border-radius:100px;
+    cursor:pointer;
+  }
+  .chip[aria-pressed="true"]{
+    background:var(--ink); color:var(--paper); border-color:var(--ink);
+  }
+  :root[data-theme="dark"] .chip[aria-pressed="true"], @media (prefers-color-scheme:dark){ .chip[aria-pressed="true"]{ background:var(--accent); color:#1a1207; border-color:var(--accent);} }
+
+  .side-foot{
+    margin-top:auto;
+    font-size:.72rem;
+    color:var(--muted);
+    padding-top:1rem;
+    border-top:1px solid var(--rule);
+  }
+
+  /* ---------- main ---------- */
+  main{
+    padding: 3.2rem 1.8rem 6rem 1.8rem;
+    min-width:0;
+  }
+  @media (max-width:920px){ main{ padding: 2rem 1.2rem 4rem; } }
+
+  header.hero{
+    max-width:62ch;
+    margin-bottom: 3.2rem;
+  }
+  header.hero .eyebrow{
+    color:var(--accent);
+    font-size:.72rem;
+    margin-bottom:.9rem;
+  }
+  header.hero h1{
+    font-size:2.4rem;
+    line-height:1.14;
+    margin:0 0 .9rem;
+    text-wrap:balance;
+    font-weight:600;
+    letter-spacing:-.01em;
+  }
+  header.hero p.dek{
+    font-size:1.08rem;
+    color:var(--ink-soft);
+    margin:0 0 1.4rem;
+    max-width:56ch;
+  }
+  .hero-meta{
+    display:flex; flex-wrap:wrap; gap:1.6rem;
+    font-family:"Avenir Next","Segoe UI",sans-serif;
+    font-size:.78rem;
+    color:var(--muted);
+    padding-top:1.1rem;
+    border-top:1px solid var(--rule);
+  }
+  .hero-meta strong{ color:var(--ink); font-weight:600; }
+
+  .session-strip{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1rem;
+    margin-bottom:3.6rem;
+  }
+  @media (max-width:760px){ .session-strip{ grid-template-columns:1fr; } }
+  .s-card{
+    background:var(--paper-raised);
+    border:1px solid var(--rule);
+    border-radius:10px;
+    padding:1.15rem 1.2rem;
+    box-shadow:var(--shadow);
+    text-decoration:none;
+    display:flex; flex-direction:column; gap:.5rem;
+  }
+  .s-card .num{
+    font-family:"Avenir Next","Segoe UI",sans-serif;
+    font-size:.7rem;
+    color:var(--accent);
+    letter-spacing:.08em;
+  }
+  .s-card h3{
+    margin:0; font-size:1.02rem; line-height:1.3; font-weight:600;
+  }
+  .s-card p{
+    margin:0; font-size:.82rem; color:var(--muted); line-height:1.45;
+  }
+  .s-card .tally{
+    margin-top:.3rem;
+    font-family:"Avenir Next","Segoe UI",sans-serif;
+    font-size:.7rem;
+    color:var(--ink-soft);
+  }
+
+  section.session-section{
+    margin-bottom:4.4rem;
+  }
+  section.session-section > .section-head{
+    display:flex; align-items:baseline; gap:.8rem; flex-wrap:wrap;
+    border-bottom:1.5px solid var(--ink);
+    padding-bottom:.6rem;
+    margin-bottom:.6rem;
+  }
+  section.session-section > .section-head h2{
+    margin:0; font-size:1.5rem; font-weight:600;
+  }
+  section.session-section > .section-head .count{
+    font-family:"Avenir Next","Segoe UI",sans-serif;
+    font-size:.75rem; color:var(--muted);
+  }
+  section.session-section > .section-dek{
+    margin:0 0 1.6rem;
+    max-width:72ch;
+    font-size:.96rem;
+    color:var(--ink-soft);
+  }
+
+  .card-grid{
+    display:flex; flex-direction:column; gap:1.1rem;
+  }
+
+  article.item{
+    background:var(--paper-raised);
+    border:1px solid var(--rule);
+    border-radius:12px;
+    padding:1.5rem 1.6rem;
+    box-shadow:var(--shadow);
+    scroll-margin-top:1.5rem;
+  }
+  article.item .item-top{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:1rem;
+    margin-bottom:.6rem;
+    flex-wrap:wrap;
+  }
+  .badge{
+    font-family:"Avenir Next","Segoe UI",sans-serif;
+    font-size:.66rem;
+    letter-spacing:.08em;
+    padding:.24rem .55rem;
+    border-radius:5px;
+    white-space:nowrap;
+  }
+  .badge.case{ background:var(--accent-soft); color:var(--accent); }
+  .badge.article{ background:var(--accent2-soft); color:var(--accent2); }
+  .badge.session{
+    background:transparent; border:1px solid var(--rule); color:var(--muted);
+  }
+  article.item h3{
+    margin:.1rem 0 .25rem; font-size:1.18rem; line-height:1.32; font-weight:600;
+  }
+  article.item .cite{
+    font-family:"Avenir Next","Segoe UI",sans-serif;
+    font-size:.76rem;
+    color:var(--muted);
+    margin-bottom:.85rem;
+  }
+  article.item p.summary{
+    margin:0 0 .9rem;
+    font-size:.96rem;
+    color:var(--ink-soft);
+    max-width:72ch;
+  }
+  .stakepill-row{
+    display:flex; flex-wrap:wrap; gap:.4rem;
+    margin-top:.3rem;
+  }
+  .stakepill{
+    font-family:"Avenir Next","Segoe UI",sans-serif;
+    font-size:.7rem;
+    color:var(--ink-soft);
+    background:var(--paper-sunk);
+    border-radius:100px;
+    padding:.24rem .6rem;
+  }
+  details.more{ margin-top:.9rem; }
+  details.more summary{
+    cursor:pointer;
+    font-family:"Avenir Next","Segoe UI",sans-serif;
+    font-size:.78rem;
+    color:var(--accent);
+    list-style:none;
+  }
+  details.more summary::-webkit-details-marker{ display:none; }
+  details.more summary::before{ content:"+ "; }
+  details.more[open] summary::before{ content:"– "; }
+  details.more .more-body{
+    padding-top:.8rem;
+    font-size:.93rem;
+    color:var(--ink-soft);
+  }
+  details.more .more-body h4{
+    font-family:"Avenir Next","Segoe UI",sans-serif;
+    font-size:.72rem;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--muted);
+    margin:1.2rem 0 .5rem;
+  }
+  details.more .more-body h4:first-child{ margin-top:0; }
+  details.more .more-body h5{
+    font-family:"Avenir Next","Segoe UI",sans-serif;
+    font-size:.86rem;
+    letter-spacing:.01em;
+    color:var(--ink);
+    margin:1rem 0 .35rem;
+  }
+  details.more .more-body ul, details.more .more-body ol{ margin:.2rem 0; padding-left:1.1rem; }
+  details.more .more-body li{ margin-bottom:.45rem; }
+  details.more .more-body p{ margin:.2rem 0 .7rem; }
+  details.more .more-body blockquote{
+    margin:.5rem 0; padding:.4rem .9rem;
+    border-left:2px solid var(--accent);
+    color:var(--ink-soft);
+    font-style:italic;
+  }
+
+  table.stake-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:.86rem;
+    margin-top:.4rem;
+  }
+  table.stake-table th, table.stake-table td{
+    text-align:left;
+    padding:.5rem .6rem;
+    border-bottom:1px solid var(--rule);
+    vertical-align:top;
+  }
+  table.stake-table th{
+    font-family:"Avenir Next","Segoe UI",sans-serif;
+    font-size:.68rem;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:var(--muted);
+    font-weight:600;
+  }
+  .wrap-table{ overflow-x:auto; margin-bottom:.8rem; }
+
+  footer.page-foot{
+    max-width:62ch;
+    border-top:1px solid var(--rule);
+    padding-top:1.6rem;
+    font-size:.82rem;
+    color:var(--muted);
+  }
+
+  article.item[data-hide="true"]{ display:none; }
+  section.session-section[data-empty="true"]{ display:none; }
+</style>
+
+<div class="shell">
+  <aside class="side">
+    <div class="brand">
+      <div class="mark">TS</div>
+      <div class="label" style="font-size:.82rem;">TS‑ADR Course Digest</div>
+      <div class="course">MBA‑II · Term 4 · Prof. Surabhi Singh<br>Indian Institute of Management, Udaipur</div>
+    </div>
+
+    <nav aria-label="Sessions">
+      <div class="group-title label">Sessions</div>
+      <ul>
+        <li><a href="#s1">S1 — Future of Work &amp; Talent</a></li>
+        <li><a href="#s2">S2 — Recruitment &amp; Make‑vs‑Buy</a></li>
+        <li><a href="#s3">S3 — People Analytics &amp; Jobs</a></li>
+      </ul>
+    </nav>
+
+    <nav aria-label="Filter by material type">
+      <div class="group-title label">Filter</div>
+      <div class="filters" role="group" aria-label="Filter reading list by type">
+        <button class="chip" data-filter="all" aria-pressed="true">All (10)</button>
+        <button class="chip" data-filter="case" aria-pressed="false">Case (1)</button>
+        <button class="chip" data-filter="article" aria-pressed="false">Article (9)</button>
+      </div>
+    </nav>
+
+    <div class="side-foot">
+      Source materials: Sessions 1–3, TSADR course folder.<br>
+      Each reading below is digested in full — every framework, statistic, named example and quote from the source text.
+    </div>
+  </aside>
+
+  <main>
+    <header class="hero">
+      <div class="eyebrow label">Talent Strategy — Attraction, Development &amp; Retention</div>
+      <h1>Ten readings, one argument: talent is now a strategic supply chain.</h1>
+      <p class="dek">An extended, session-by-session digest of the TS‑ADR course pack — from the macro forces reshaping
+      work, through a live recruitment dilemma at an Indian ceramics manufacturer, to the analytics capability firms
+      now need to forecast and manage talent at scale. Every reading below is expanded into a full working summary:
+      frameworks explained component-by-component, every statistic and named example, and verbatim quotes with
+      attribution.</p>
+      <div class="hero-meta">
+        <span><strong>3</strong> sessions</span>
+        <span><strong>10</strong> readings</span>
+        <span><strong>1</strong> case study — Somany Ceramics</span>
+        <span><strong>9</strong> articles &amp; reports</span>
+      </div>
+    </header>
+
+    <div class="session-strip">
+      <a class="s-card" href="#s1">
+        <span class="num label">Session 1</span>
+        <h3>The Future of Work &amp; Talent</h3>
+        <p>Why talent management became a board‑level question — the tectonic forces, how to spot potential, and the 2026 CHRO agenda.</p>
+        <span class="tally label">3 articles</span>
+      </a>
+      <a class="s-card" href="#s2">
+        <span class="num label">Session 2</span>
+        <h3>Recruitment, Bad Hires &amp; Make‑vs‑Buy</h3>
+        <p>Somany Ceramics' hiring crunch, anchored by AI‑recruitment evidence and Cappelli's make‑versus‑buy logic.</p>
+        <span class="tally label">1 case · 3 articles</span>
+      </a>
+      <a class="s-card" href="#s3">
+        <span class="num label">Session 3</span>
+        <h3>People Analytics &amp; the Future of Jobs</h3>
+        <p>The WEF's 2030 jobs forecast, the theory of predictive HR analytics, and a working talent‑acquisition tech stack.</p>
+        <span class="tally label">3 articles</span>
+      </a>
+    </div>
+
+    <!-- ======================================================= -->
+    <!-- ============ SESSION 1 ============ -->
+    <!-- ======================================================= -->
+    <section class="session-section" id="s1">
+      <div class="section-head">
+        <h2>Session 1 — The Future of Work &amp; Talent</h2>
+        <span class="count label">3 items</span>
+      </div>
+      <p class="section-dek">Why talent management became a board-level question: the three tectonic forces reshaping
+      work, a validated model for spotting leadership potential beyond past performance, and Bain's 2026 read on the
+      macro forces rewriting the CPO's mandate.</p>
+      <div class="card-grid">
+
+        <article class="item" id="a1" data-type="article">
+          <div class="item-top">
+            <span class="badge article label">Article</span>
+            <span class="badge session label">Session 1</span>
+          </div>
+          <h3>Talent Management and the Future of Work</h3>
+          <div class="cite">Harvard Business School Note 9‑820‑084 · William Kerr &amp; Gorick Ng · February 14, 2020</div>
+          <p class="summary">Names three tectonic forces — technology, demographics and globalisation — reshaping how
+          firms access workers, and structures the whole problem as Forces of Change → Workplace Challenges →
+          Managerial Levers, with fifteen specific managerial responses spanning talent management, workplace design
+          and external collaboration.</p>
+          <details class="more">
+            <summary>Full digest: all three forces (15 sub-trends), three workplace challenges, and all 15 managerial levers</summary>
+            <div class="more-body">
+              <h4>Core argument</h4>
+              <p>The nature of work is changing rapidly, driven by three simultaneous, interacting macro-forces —
+              likened by the authors to "tectonic plates rubbing against each other": technology advancement,
+              demographic transition, and global integration. These forces are reshaping firms' ability to access the
+              right workers with the right skills and are redefining worker productivity. The note's practical
+              purpose is to give managers a structured framework — forces of change → workplace challenges →
+              managerial levers — to diagnose what's happening in their industry and decide how to adapt. The opening
+              hook: Amazon and AT&amp;T are each investing billions of dollars to retrain roughly half their
+              workforces for "jobs of the future."</p>
+
+              <h4>Force 1 — Technology advancement</h4>
+              <p>Illustrative comparison: Apple's 2018 iPhone had <strong>100,000 times the processing power</strong>
+              of the room-sized computers NASA used for the Apollo program in the 1960s, and was <strong>3,300 times
+              cheaper</strong>. Five sub-trends (cause → effect): (1) digitisation of nearly every industry/function
+              → need to transform business models and legacy practices; (2) declining barriers to entry for
+              technology-first players with different cost structures → need to rethink the value chain and value
+              proposition; (3) pressure for labour to be automated or augmented → need to reevaluate how work gets
+              done and how technique is taught; (4) unlocking of unprecedented latent data/insights → need for
+              analytical methods and digitally savvy workers; (5) declining half-life of worker skills → need to
+              continually keep skills sharp and relevant.</p>
+              <blockquote>Tim Buckley (CEO, The Vanguard Group): "Technology will change the advice industry, and
+              that's uncomfortable. You can fight it, you can deny it, or you can embrace it as an opportunity to
+              scale your business better and lower your cost structure."</blockquote>
+
+              <h4>Force 2 — Demographic transition</h4>
+              <p>Female labour-force entry has "mostly run its course"; birth rates peaked in the 1950s and have
+              plummeted, pushing retirements to exceed new entrants. <strong>Millennials comprise 35% of the
+              workforce</strong> — the largest generational cohort ever — and bring new preferences about work.
+              Educated workers have concentrated in urban centres. Five sub-trends: (1) slower growth/decline in
+              national workforces → need to identify and compete for scarcer, often "hidden," workers; (2) rising age
+              and impending retirements → need to succession-plan and support caregiving burdens; (3) growing
+              diversity of age/ethnicity/background → need to appreciate different worker needs; (4) changing
+              attitudes of Millennials/Gen Z → need to rethink the firm-worker relationship and employer value
+              proposition; (5) growing concentration of skilled workers in large cities → need to bridge concentrated
+              talent pools with the broader workforce.</p>
+              <blockquote>Greg Case (CEO, Aon Corporation): "People allocation is as powerful as financial
+              allocation."</blockquote>
+
+              <h4>Force 3 — Global integration</h4>
+              <p>Technology and globalisation have reinforced each other since WWII. Five sub-trends: (1) access to a
+              global customer/client base → need to build overseas capabilities and local sensitivity; (2) access to
+              an international talent pool → need to navigate immigration law and manage distributed workforces; (3)
+              potential for work to be done anytime/anywhere → need to redefine productivity and manage remote/complex
+              team structures; (4) continued pressure to place routine work in lower-cost settings → need to manage
+              regulatory/reputational/operational risk; (5) emergence of formidable global competitors → need to
+              safeguard IP and monitor foreign rivals. The note flags globalisation's downside — inequality fuelling
+              populism/protectionism, citing Brexit.</p>
+              <blockquote>Jamie Dimon (CEO, JPMorgan Chase): "Globalization — I don't think it has to be reversed…
+              there were flaws… people were hurt by it… they went from earning $40 an hour to $10 an hour. We need to
+              recognize that and do something about it… retraining, relocation, business redevelopment — all these
+              things can work if properly done."</blockquote>
+
+              <h4>Workplace challenge 1 — Worker access</h4>
+              <p>"Do we have access to sufficient quantities of the right talent?" Four access channels: (A) <strong>campus
+              recruiting</strong> (internships, apprenticeships) — struggles: high cost competing against
+              better-branded firms, inexperience requiring investment, churn risk, culture misalignment with younger
+              workers; (B) <strong>active/passive job seekers</strong> (postings, recruiters, referrals) — struggles:
+              poor/biased fit proxies, reliance on brand recognition, wage premiums, risk of low diversity from
+              hiring people like existing staff; (C) <strong>"hidden workers"</strong> outside the labour force —
+              explicitly named: the previously incarcerated, those recovering from substance abuse, the physically
+              impaired, and parental-leave/retirement returners — struggles: reimagining hiring funnels, training
+              investment for employment gaps, restructuring norms, addressing stigma; (D) <strong>internal talent
+              reallocation</strong> to better-fitting roles, enabled by gig-matching algorithms — struggles: mapping
+              role-specific skills, institutional inertia/funding constraints, friction from non-traditional career
+              paths.</p>
+
+              <h4>Workplace challenge 2 — Competencies and skills</h4>
+              <p>Introduces <strong>"degree inflation"</strong> — job postings requiring more education than current
+              workers actually possess — which inflates labour costs and shrinks the qualified pool. (A) <strong>Soft
+              skills gap</strong>: as automation handles rule-based tasks, demand grows for teamwork/complex
+              problem-solving (citing Autor, Levy &amp; Murnane, 2003). Named examples: Walmart uses VR headsets for
+              customer-service training; McDonald's elevates hiring of retirees for reliability/professionalism.
+              Struggles: identifying/teaching what separates effective from mediocre workers; proving ROI on soft
+              skills; confronting that soft skills reflect "cultural capital" not shared by all in diverse
+              workplaces. (B) <strong>Digital skills gap</strong>: a John Deere tractor now has <strong>30–40
+              on-board computers</strong>, requiring digital soft skills (customer-centricity, data-driven
+              decisions, comfort with ambiguity) alongside technical literacy. Struggles: managing non-digital
+              natives, funding upskilling knowing not everyone reaches proficiency, costly/disruptive
+              transformations causing resistance and job cuts.</p>
+
+              <h4>Workplace challenge 3 — Productivity at work</h4>
+              <p>"Is this talent productive?" (A) <strong>Inputs → outputs</strong>: shift from the 8-hour/5-day,
+              face-time model toward output/value-creation measurement — struggles: culture without collocation,
+              misread non-verbal cues, assessing non-atomizable/non-quantifiable output. (B) <strong>Low- →
+              high-value work</strong>: robotic process automation (insurance-claims processing, chatbots) frees
+              workers for higher-value tasks — struggles: securing buy-in, risky bets on emergent tech, maintaining
+              service quality. (C) <strong>Treatment → prevention</strong>: preventive health coaches/apps, tuition
+              reimbursement/loan repayment for retention — struggles: engaging the highest-risk employees, securing
+              leadership commitment, assessing ROI.</p>
+
+              <h4>The 15 managerial levers (5 per category, framed as diagnostic questions)</h4>
+              <p><strong>Talent management:</strong> (1) assess/continuously train hard and soft skills; (2) capture
+              and codify institutional memory for high-attrition roles; (3) mitigate obstacles preventing workers from
+              considering certain roles; (4) mitigate obstacles preventing workers from being considered (separate
+              skill signal from noise like gender/credentials); (5) systematically analyse/mitigate drivers of
+              absenteeism and turnover.</p>
+              <p><strong>Workplace design:</strong> (1) combat unspoken rules favouring "inputs" over "outputs"; (2)
+              optimise the monetary/non-monetary employer value proposition; (3) assess how data/tech can improve
+              productivity; (4) explore work-life balance policies (remote, parental, medical leave); (5) expand ways
+              for workers to move between roles/functions.</p>
+              <p><strong>External collaborations:</strong> (1) curriculum design/hiring partnerships with educational
+              institutions; (2) partnerships with organisations serving non-traditional talent pools; (3) industry
+              consortia to pilot/scale workforce development jointly; (4) engagement with lawmakers on worker
+              availability/quality legislation; (5) systems to monitor/manage outsourcing and offshoring risk.</p>
+
+              <h4>Practical implications</h4>
+              <p>Managers must systematically diagnose which forces hit their business hardest, work through the
+              three workplace-challenge questions, then select from the fifteen levers — an explicitly modular,
+              diagnostic toolkit rather than a prescriptive solution.</p>
+            </div>
+          </details>
+        </article>
+
+        <article class="item" id="a2" data-type="article">
+          <div class="item-top">
+            <span class="badge article label">Article</span>
+            <span class="badge session label">Session 1</span>
+          </div>
+          <h3>How to Spot — and Develop — High‑Potential Talent in Your Organization</h3>
+          <div class="cite">Harvard Business Review · James Intagliata, Jennifer Sturman &amp; Stephen Kincaid (ghSMART) · May 26, 2022</div>
+          <p class="summary">Past performance is a biased, incomplete proxy for future potential. Drawing on 23,000+
+          candidate assessments and an in-depth analysis of 1,500 individuals, ghSMART isolates three behavioural
+          markers — Cognitive Quotient, Drive Quotient and Emotional Quotient — that predict leadership growth two
+          times out of three, beating the roughly 50/50 odds of typical promotion decisions.</p>
+          <details class="more">
+            <summary>Full digest: the CQ/DQ/EQ model, both validation studies, development tactics, and the full "Maya" case</summary>
+            <div class="more-body">
+              <h4>Core argument and methodology</h4>
+              <p>Organisations traditionally identify future leaders by track record — who's taken on more
+              responsibility, who's hit targets. This fails for two reasons: it can't predict who can do things
+              they haven't done before, and it under-identifies high potentials early in career, especially those
+              without equitable access to mentoring, sponsorship and advancement. The model draws on a
+              <strong>database of 23,000+ candidate assessments</strong>, with in-depth analysis of
+              <strong>1,500 individuals</strong> ranging from entry-level professionals to senior leaders, to
+              isolate three markers of <em>how</em> people use intellect, motivation and interpersonal style on the
+              job — not raw measures of them.</p>
+
+              <h4>Cognitive Quotient (CQ) — how they leverage their intellect</h4>
+              <p>Critiques standard measures (transcripts, psychometric tests, case interviews) as biased toward elite
+              schools and "hoop-jumping" over practical/commercial instinct. High-CQ behaviours: routinely stepping
+              back to see things from a manager's (or manager's manager's) perspective; "looking around corners" to
+              anticipate the unexpected; grounding even small decisions in how they create business value.</p>
+
+              <h4>Drive Quotient (DQ) — what motivates them and how they apply energy</h4>
+              <p>Distinguished from generic motivation/work ethic (common among aspiring leaders, non-differentiating).
+              The true differentiator: applying energy not just to maximise <em>own</em> performance but to develop
+              and leverage <em>others'</em> capabilities. High-DQ people push past comfort zones with relish, are
+              resilient (reset/reframe after setbacks), and strive to amplify results at the organisational level.</p>
+
+              <h4>Emotional Quotient (EQ) — how they interact with those around them</h4>
+              <p>Goes beyond basic self-awareness/rapport (necessary but not sufficient) to "engaging for impact" —
+              intentionally channelling insight to influence stakeholders and negotiate outcomes — and the courage and
+              empathy to deliver difficult messages.</p>
+
+              <h4>Validation study 1 — double-blind, early-career</h4>
+              <p>Looking only at leaders' earlier career phases, the three markers differentiated future C-suite
+              executives from those who didn't make it <strong>two times out of three</strong> (~67% accuracy) —
+              significantly outperforming the roughly 50/50 odds of typical hiring/promotion decisions.</p>
+
+              <h4>Validation study 2 — multi-year, 1,800-candidate, single organisation</h4>
+              <p>Managers rated candidates' performance independently and blind to the researchers' potential
+              ratings. Candidates rated highly on potential were <strong>more than three times as likely</strong> to
+              be rated top performers in year one — a gap persisting through years two to four — and were less
+              likely to be involuntarily terminated. Conclusion: the model captures a style of thinking and working
+              that sets the stage for ongoing growth, not just current skill.</p>
+
+              <h4>Development tactics by quotient</h4>
+              <ul>
+                <li><strong>CQ:</strong> attend meetings with senior leaders for broader perspective; assignments
+                requiring engagement across other parts of the organisation; participation in industry
+                conferences/events for external exposure.</li>
+                <li><strong>DQ:</strong> stretch opportunities — rotating into different markets/business areas,
+                bigger teams — observing whether they proactively seek feedback rather than wait to be told.</li>
+                <li><strong>EQ:</strong> spell out the organisation's "unwritten rules" of engagement; task with
+                stakeholder mapping as an explicit development objective; introduce frameworks for understanding how
+                they and others are personally "wired."</li>
+              </ul>
+              <p>Practical rollout: educate managers that performance alone isn't a potential proxy, especially for
+              candidates without a track record or matching prior leader "molds"; build formal "potential profiles"
+              into performance management and development processes.</p>
+
+              <h5>Case study: "Maya" (name changed)</h5>
+              <p>A Fortune 500 client engaged ghSMART to identify/develop high potentials, mostly leaders two levels
+              below the C-suite. Maya was three levels down, included only when a program spot unexpectedly opened —
+              largely unknown to senior leaders, and those who did know her called her "too young," "too eager to
+              please," lacking "gravitas."</p>
+              <p><strong>CQ:</strong> impressed evaluators by weighing multiple scenarios rather than locking onto one
+              answer, factoring in broader industry/competitive context — rated highly. <strong>DQ:</strong> immigrant
+              parents in blue-collar jobs; chose a college for its financial package over prestige; sought stretch
+              assignments from her earliest roles; volunteered to lead the firm's women's mentorship initiative.
+              <strong>EQ (weakest area):</strong> her drive to deliver results came at the cost of relationship
+              building; she struggled where persuasion (not just facts) was needed and avoided conflict rather than
+              having tough conversations.</p>
+              <p>Coaching intervention: became more intentional about stakeholder engagement and how she "showed up";
+              held accountable for tackling difficult issues head-on; recommended for a cross-functional rotation.
+              <strong>Outcome:</strong> within 24 months she jumped two levels into a high-visibility role where she
+              is thriving — her new boss calls her a "rock star" — and she is now a leading C-suite feeder candidate.</p>
+
+              <h4>Closing caveat</h4>
+              <p>Not all behaviours are equally coachable — influence/persuasion skills are readily coachable, while
+              thinking more conceptually/strategically may be harder to change. Managers should weigh how readily any
+              missing behaviour can realistically be learned when assessing readiness for a new leadership role.</p>
+            </div>
+          </details>
+        </article>
+
+        <article class="item" id="a3" data-type="article">
+          <div class="item-top">
+            <span class="badge article label">Article</span>
+            <span class="badge session label">Session 1</span>
+          </div>
+          <h3>The Great Talent Recalibration: How Macroeconomic Shifts Are Reshaping the CHRO Agenda</h3>
+          <div class="cite">Bain &amp; Company Insights · Karen Harris, Susan Gunn &amp; John Hazan · January 2026</div>
+          <p class="summary">Insights from Bain's CPO Forum (81 surveyed CPOs) identify four structural forces —
+          post-globalisation, capital scarcity, demographic decline and the falling cost of distance — pushing the
+          CPO's mandate from "people steward" to "architect of the 2040 workforce," in what the authors call the most
+          turbulent macro environment since the early 1970s.</p>
+          <details class="more">
+            <summary>Full digest: the 81-CPO survey, all four macro forces, the AI/human-interface question, and the CPO's evolving mandate</summary>
+            <div class="more-body">
+              <h4>Core argument</h4>
+              <p>"The context in which most HR leaders built their careers is not the context in which they will lead
+              the future." Organisations are navigating the most turbulent macroeconomic environment in decades —
+              unlike anything since the early 1970s — as post-globalisation impacts evolve, capital becomes
+              constrained, labour pools shrink, and AI transforms work. The CPO's mandate is expanding from steward of
+              people to <strong>architect of the 2040 workforce</strong>, spanning automation, location strategy and
+              long-term skills access.</p>
+
+              <h4>Survey data</h4>
+              <p>Drawn from Bain's survey of <strong>81 CPOs and talent officers</strong> across global industries.
+              <strong>70%</strong> reported concern about slowing US labour-market momentum spilling into EMEA and
+              Asia-Pacific. A majority are considering hiring adjustments in select markets, and some are actively
+              rebalancing their global hiring footprint. CPOs are prioritising HR efficiency, AI implementation, and
+              organisational redesign alongside cultural/leadership needs — reflecting tension between investing in
+              people versus automation.</p>
+
+              <h4>Force 1 — Post-globalisation and new limits on talent mobility</h4>
+              <p>Bain does not believe in full "deglobalisation," but a "post-global world" of growing friction in
+              trade of goods, services, IP and capital — undermining the foundational assumption that talent can move
+              freely across borders. Named example: in the <strong>semiconductor industry</strong>, the US has
+              restricted not just where goods can be sold but <strong>which passport holders may work on specific
+              technologies</strong> destined for certain markets — geopolitics directly shaping talent deployment.
+              Takeaway: CPOs must plan for a world where geopolitical boundaries increasingly shape access to skills.</p>
+
+              <h4>Force 2 — Capital scarcity and rising pressure on productivity</h4>
+              <p>Marks the end of "capital superabundance" — for three decades the financial economy grew far faster
+              than the real economy, making capital a lesser constraint than ideas or talent; this is reversing.
+              Competing demands for capital (automation, energy transition, infrastructure) collectively exceed
+              annual economic savings, and capital supply is expected to grow much more slowly than before — creating
+              growing tension between investing in people versus automation and sharper scrutiny of ROI.</p>
+
+              <h4>Force 3 — Demographic decline and structural labour shortages</h4>
+              <p>Called "perhaps the most profound and least reversible force shaping the future workforce." Working-age
+              populations are shrinking in <strong>China, Germany and Japan</strong>. Even in the US — assuming some
+              mitigation of current immigration policy — total workforce is expected to grow only <strong>4% between
+              now and 2050</strong>. China, a country of over a billion people, recorded only <strong>9.5 million
+              births in 2024</strong>. <strong>India is identified as the only large economy with a workforce still
+              growing at scale.</strong> Implication: companies cannot meet talent needs through hiring alone —
+              automation becomes a productivity necessity, not just a cost lever.</p>
+
+              <h4>Force 4 — The decreasing cost of distance</h4>
+              <p>Technology has enabled greater spatial dispersion of work. Remote work surged during Covid-19 and has
+              since stabilised near <strong>20%</strong>; office occupancy remains at roughly <strong>50% of
+              pre-Covid levels</strong>. Hybrid work expands talent access but challenges apprenticeship, cohesion and
+              culture, and physical infrastructure built for a previous era must adapt.</p>
+
+              <h4>Automation, AI, and the human-machine frontier</h4>
+              <p>Automation/AI form "a powerful throughline connecting demographics, capital, and globalisation" —
+              generative AI and dexterity robotics push automation into sectors once thought resistant, like
+              healthcare and food preparation. The central strategic question: <strong>"When do we need a
+              human?"</strong> AI can be technically correct yet fail at the "human interface" — the common
+              experience of trying to bypass a chatbot on a service call. Strategic implication: design workforces not
+              to automate indiscriminately, but to determine where human presence — empathy, judgment, trust, nuance
+              — matters most.</p>
+
+              <h4>Geopolitics and the shifting map of global talent</h4>
+              <p>Recent changes to US working visas are creating anxiety for employees and new burdens for employers,
+              potentially eroding the US's status as the default destination for talent. Named example: AI
+              translation tools let firms draw from new labour pools — e.g., hiring customer-support talent in
+              <strong>Guatemala</strong> (time-zone aligned with the US) rather than the <strong>Philippines</strong>,
+              as language barriers diminish.</p>
+
+              <h4>The CPO role: from people steward to architect of the 2040 workforce</h4>
+              <p>CPOs are now expected to help answer: In 2040, what is our workforce composition? Where do we have
+              people versus automation? How do we get closest to talent? The role evolves from "steward of people" to
+              "strategist of the entire workforce system" — automation strategy, location strategy, and long-term
+              skills access, on a 2040 planning horizon.</p>
+
+              <h4>Practical implications for CHROs/CPOs</h4>
+              <ul>
+                <li>Treat talent mobility as geopolitically constrained — build contingency plans around visa/trade
+                shifts (semiconductor sector as cautionary template).</li>
+                <li>Expect capital to be scarcer and more contested — justify people investment with sharper ROI
+                discipline against automation/energy/infrastructure competition.</li>
+                <li>Treat demographic decline as structural and largely irreversible — embrace automation as a
+                productivity necessity in shrinking-workforce markets while watching India as the growth exception.</li>
+                <li>Reconfigure real estate, culture and apprenticeship models for a stabilised hybrid reality
+                (~20% remote, ~50% office occupancy).</li>
+                <li>Use AI strategically — deliberately decide where humans remain essential rather than automating
+                indiscriminately.</li>
+                <li>Rethink global talent-hub location strategy given immigration volatility and AI-enabled new
+                labour pools.</li>
+                <li>Reframe the CPO/CHRO mandate from administering people programs to architecting the entire future
+                workforce system.</li>
+              </ul>
+            </div>
+          </details>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- ============ SESSION 2 ============ -->
+    <!-- ======================================================= -->
+    <section class="session-section" id="s2">
+      <div class="section-head">
+        <h2>Session 2 — Recruitment, Bad Hires &amp; Make‑vs‑Buy</h2>
+        <span class="count label">4 items</span>
+      </div>
+      <p class="section-dek">Somany Ceramics' live "tug vs. train" hiring dilemma, anchored by evidence on AI in
+      recruitment, a playbook for recovering from a bad hire, and Cappelli's operations-research reframing of
+      make‑versus‑buy talent decisions.</p>
+      <div class="card-grid">
+
+        <article class="item" id="somany" data-type="case">
+          <div class="item-top">
+            <span class="badge case label">Case</span>
+            <span class="badge session label">Session 2</span>
+          </div>
+          <h3>Somany Ceramics: Recruitment Challenges</h3>
+          <div class="cite">Ivey Publishing, W18499 / 9B18C025 · Kodwani, Kumar &amp; Prashar · 2018</div>
+          <p class="summary">In December 2016, SCL's HR director Hrishikesh Kumar leaves a meeting with the company's
+          top executives both excited and troubled. India's ceramic-tile market is projected to grow from 12.3 to 21.8
+          billion m² of demand by 2020, and Joint MD Abhishek Somany wants SCL to capture the largest possible share of
+          that growth — but the entire Indian ceramics industry suffers a structural shortage of technically trained
+          labour, and engineering graduates overwhelmingly prefer IT (63% in one survey) over ceramics, drawn by nearly
+          double the entry-level salary. Kumar must decide whether to "tug" trained workers away from rivals at a wage
+          premium, or "train" inexperienced recruits from scratch on full salary — a decision his own team is split on.</p>
+
+          <details class="more">
+            <summary>Full brief: company &amp; industry background, financials, competitors, the complete "tug vs. train" analysis, stakeholders, and discussion questions</summary>
+            <div class="more-body">
+              <h4>Opening frame</h4>
+              <p>The case opens in December 2016. Hrishikesh Kumar, Director of HR at Somany Ceramics Limited (SCL),
+              has just met the top executives and is simultaneously excited (about industry growth prospects) and
+              troubled (about how to staff for that growth). The core tension: the ceramic-tile market is projected
+              to grow at a <strong>CAGR of 8.5%</strong>, from demand of <strong>12.3 billion m² to 21.8 billion m²
+              by 2020</strong>. Management wants Kumar to scale up labour to match this growth, but the entire
+              ceramic-tile industry suffers an acute shortage of industry-ready technical labour. The question posed
+              to students: how could Kumar hire and sustain a workforce of trained labourers over the next five
+              years, sustainably and cost-effectively?</p>
+
+              <h4>Company history and leadership</h4>
+              <p><strong>1969:</strong> founded as Somany Pilkington, a joint venture with Pilkington Tiles (UK).
+              <strong>1994:</strong> Indian promoters bought out all UK partner equity. <strong>2007:</strong> renamed
+              Somany Ceramics Limited (SCL). Three generations of Somany family leadership by 2016: <strong>H. L.
+              Somany</strong> (founder, Chairman Emeritus), <strong>Shreekant Somany</strong> (Chairman &amp; Managing
+              Director), and <strong>Abhishek Somany</strong> (Joint Managing Director) — credited with driving
+              consistent growth since 1969 and wanting the company to grow faster, requiring competent talent with
+              technical ceramics expertise. Company vision: "the most sought-after tile and allied product [company]
+              in India and the best employer in the tile industry." Headquartered in Noida, Uttar Pradesh.</p>
+
+              <h4>Products, plants and capacity</h4>
+              <p>Product range: floor tiles, wall tiles &amp; claddings, chrome-plated fittings &amp; accessories,
+              sanitaryware (basins, cisterns, toilets, urinals), and tile-laying solutions. Manufacturing plants at
+              <strong>Kassar</strong> (Haryana) and <strong>Kadi</strong> (Gujarat); combined annual capacity across
+              plants and joint ventures of <strong>41 million m²</strong>. In 2015–16, Kassar capacity rose from
+              21.55 to 25.55 million m²/year, and subsidiary/associate capacity rose from 20.97 to 25.70 million
+              m²/year. Distribution network: <strong>1,490 dealers, 8,000 sub-dealers, 146 retail showrooms</strong>.
+              Milestones: first in India to produce 45×45 cm tiles domestically (1996); ISO 9001 accreditation
+              (1999); ISO 14001 for the Kadi facility. 2016 market capitalisation ≈ <strong>₹31.02 billion
+              (US$462.98 million)</strong>.</p>
+
+              <h4>Workforce profile (2016)</h4>
+              <div class="wrap-table">
+              <table class="stake-table">
+                <tr><th>Employment mode</th><th>Number</th></tr>
+                <tr><td>Staff (company roll + outsourced)</td><td>432</td></tr>
+                <tr><td>Permanent workers</td><td>492</td></tr>
+                <tr><td>Contractual workers</td><td>880</td></tr>
+                <tr><td>Casual workers</td><td>326</td></tr>
+                <tr><td><strong>Total workforce (both plants)</strong></td><td><strong>2,130</strong></td></tr>
+              </table>
+              </div>
+              <p>SCL believed its singular differentiator in a crowded market was the <strong>quality of its
+              labourers</strong>, not product design. Average employee age fell from 40 (2008–09) to 34 (2014–15) —
+              evidence of a "youthful organization." Technical-labour turnover was only <strong>3%</strong>, but
+              workers "could not be retained for long without incremental salary increases."</p>
+
+              <h4>Financial performance (₹ millions)</h4>
+              <div class="wrap-table">
+              <table class="stake-table">
+                <tr><th>Line item</th><th>FY2014–15</th><th>FY2015–16</th></tr>
+                <tr><td>Revenue from Operations</td><td>15,410.00</td><td>17,307.00</td></tr>
+                <tr><td>Total Revenue</td><td>15,489.00</td><td>17,399.00</td></tr>
+                <tr><td><strong>Employee Benefit Expense</strong></td><td><strong>953.61</strong></td><td><strong>1,116.30</strong></td></tr>
+                <tr><td>Profit before Tax</td><td>655.07</td><td>908.76</td></tr>
+                <tr><td><strong>Profit after Tax</strong></td><td><strong>443.83</strong></td><td><strong>610.58</strong></td></tr>
+              </table>
+              </div>
+              <p>At ₹67.17 = US$1 (2016 average), FY2015–16 revenue ≈ US$257.5 million, net profit ≈ US$9.1 million.
+              Employee-benefit/labour costs rose from ₹963.6 million ($15.05M) in 2015 to ₹1.12 billion ($16.66M) in
+              2016 — direct evidence labour costs were already climbing before any new "tug" strategy.</p>
+
+              <h4>Industry data — global and Indian ceramic-tile market</h4>
+              <p>Global market valued at <strong>$76.81 billion (2015)</strong>, forecast to reach <strong>$178.1
+              billion by 2024</strong> (implied global CAGR ≈9.8%). Indian market estimated at <strong>₹270 billion
+              (~$4.03 billion)</strong> as of March 2016. Per-capita tile consumption in India: only <strong>0.59
+              m²</strong> — far below Brazil (4.12 m²), China (3.33 m²), Vietnam (2.8 m²) — signalling large headroom.
+              Growth drivers: Swachh Bharat Abhiyan, smart cities, urbanisation. Forecast Indian CAGR:
+              <strong>12–15%</strong>, faster than the 9.8% global rate. <strong>45–50%</strong> of the Indian market
+              remained fragmented among unbranded players. Sector employment: over 550,000 people (50,000 direct,
+              500,000 indirect).</p>
+
+              <h4>Competitive landscape</h4>
+              <p><strong>Kajaria Ceramics</strong> (incorporated 1985) — largest Indian tile manufacturer, 1,200+
+              product options, exports to 20 countries, clients include DLF, Unitech, Sobha, Prestige Group; won
+              Superbrands India 7 times by 2016; FY2015–16 net sales <strong>₹24.48 billion (US$365.37M)</strong>.
+              <strong>HSIL Ltd.</strong> — founded by the Somany family itself in 1960 as Hindustan Twyfords; renamed
+              HSIL in 2009; entered tiles properly via the 2010 Hindware Italian collection launch; 2016 net sales
+              <strong>₹19.44 billion (US$290.19M)</strong>. <strong>Cera Sanitaryware</strong> — started 1980, tied up
+              with Italy's Rondine Group; tiles only 12% of FY2014–15 turnover vs. ~60% from sanitaryware; 2016
+              revenue <strong>₹9.34 billion (US$139.35M)</strong>, up 13.63% YoY.</p>
+
+              <h4>The labour-market problem — the "tug vs. train" dilemma</h4>
+              <p>Roughly <strong>780,000 engineers</strong> enter India's job market annually (150,000 of them IT
+              engineers), but virtually all engineering graduates gravitate to IT for its glamour and benefits. A
+              2012 Nielsen Campus Track survey found <strong>63% of 2013 graduates</strong> preferred IT
+              services/products. IT firms would hire graduates of any specialisation and invest 3 months to a year
+              training them — a scale ceramics firms could not match. Only <strong>7–10%</strong> of new engineering
+              graduates nationally were estimated employable for core engineering work at all.</p>
+              <div class="wrap-table">
+              <table class="stake-table">
+                <tr><th>Sector</th><th>Avg. entry-level salary (₹'000)</th></tr>
+                <tr><td>Civil / Construction</td><td>325</td></tr>
+                <tr><td>Software Engineer</td><td>408</td></tr>
+                <tr><td><strong>Ceramics</strong></td><td><strong>210</strong></td></tr>
+              </table>
+              </div>
+              <p>Ceramics paid roughly half of IT entry salaries and well below construction — a structural
+              disadvantage compounded by IT's perceived superiority on career opportunities, work environment,
+              lifestyle, status and flexible schedules. Ceramics was seen as an "unconventional" career choice, and
+              being more labour-intensive, needed far more workers per unit of output growth than IT or construction.</p>
+
+              <h5>Option 1 — "Tug" (poach from competitors)</h5>
+              <p>Pros: immediate access to already-competent, skilled workers with no training lag. Cons: requires
+              paying far more than competitors currently pay, escalating industry-wide wage costs; disturbs
+              equilibrium in both the organisation and industry; SCL itself was vulnerable to the same tactic and had
+              to actively guard its own skilled workers against poaching; paying poached hires a premium creates
+              internal pay-equity discontent; labour costs were already rising (₹963.6M → ₹1.12B) even without an
+              aggressive poaching strategy.</p>
+
+              <h5>Option 2 — "Train" (hire non-ceramic-background candidates, train internally)</h5>
+              <p>Process: identify candidates unable to find jobs elsewhere for lack of technical skills, screen for
+              interest in a ceramics career, run them through structured training on <strong>full salary</strong>.
+              Pros: a continuous, controllable talent pipeline, theoretically easier to retain since trainees have
+              fewer outside options and owe their skill formation to SCL. Cons: risk candidates remain unsuitable even
+              after a long training program — a significant sunk cost given full-salary training; identifying and
+              training suitable candidates is itself time-consuming and costly.</p>
+
+              <p>The majority of Kumar's recruitment team favoured "train," believing retention would be easier for
+              home-grown talent; the minority worried identification and training would be too slow and costly. The
+              case ends unresolved — SCL's salaries were already roughly in line with the industry average, yet
+              hiring and retaining skilled talent remained fundamentally unsolved, with the clock ticking against a
+              five-year expansion ambition.</p>
+
+              <h4>Key stakeholders</h4>
+              <div class="wrap-table">
+              <table class="stake-table">
+                <tr><th>Stakeholder</th><th>Title / role</th><th>Relevance</th></tr>
+                <tr><td>Hrishikesh Kumar</td><td>Director of HR, SCL</td><td>Case protagonist; must choose and justify a hiring strategy under cost, speed and retention constraints.</td></tr>
+                <tr><td>Abhishek Somany</td><td>Joint Managing Director, SCL</td><td>Sets the aggressive growth mandate that creates the staffing bottleneck.</td></tr>
+                <tr><td>Shreekant Somany</td><td>Chairman &amp; Managing Director, SCL</td><td>Sets overall strategic direction for the family-controlled firm.</td></tr>
+                <tr><td>H. L. Somany</td><td>Founder, Chairman Emeritus, SCL</td><td>Founded the firm in 1969; embodies its "best employer in the industry" identity.</td></tr>
+                <tr><td>SCL recruitment team</td><td>HR staff</td><td>Internally split between the "train" and "tug" strategies — the case's central debate.</td></tr>
+                <tr><td>Kajaria, HSIL, Cera</td><td>Direct competitors</td><td>The pool SCL could poach from — and must defend its own trained staff against. HSIL was itself originally a Somany family venture.</td></tr>
+                <tr><td>India's IT sector</td><td>Competing employer of engineering talent</td><td>The real rival for entry-level graduates, via pay, prestige and lifestyle — the structural cause of the entire dilemma.</td></tr>
+              </table>
+              </div>
+
+              <h4>Discussion questions implied by the case</h4>
+              <ol>
+                <li>Should SCL pursue "tug," "train," or a hybrid, to build its future workforce?</li>
+                <li>How should SCL quantify and compare poaching costs (wage inflation, internal equity, retaliation
+                risk) against training costs (time, trainee salaries, post-training unsuitability risk)?</li>
+                <li>How can SCL make itself more attractive to engineering graduates given the wage gap with IT/
+                construction and ceramics' "unconventional" image?</li>
+                <li>Given the industry-wide shortage (only 7–10% of engineers employable; most preferring IT), is
+                this a firm-level problem SCL alone can solve, or does it require an industry/policy response?</li>
+                <li>How does SCL sustain a trained workforce over a five-year horizon while remaining cost-effective,
+                given rising employee-benefit expenses?</li>
+              </ol>
+
+              <h4>Angles for discussion</h4>
+              <ul>
+                <li><strong>Strategic:</strong> growth ambition is bottlenecked by workforce supply, not capital or demand — a live illustration of talent management as a board-level constraint.</li>
+                <li><strong>Labour economics:</strong> a direct test of Cappelli's make‑versus‑buy framework — "tug" is buy, "train" is make, and the four diagnostic questions (duration of need, skill hierarchy, culture importance, forecast accuracy) apply almost exactly.</li>
+                <li><strong>Employer branding:</strong> ceramics manufacturing loses a perception war against IT on pay, prestige and lifestyle that no single firm can fully solve alone — an industry-attractiveness problem, not a firm-attractiveness one.</li>
+                <li><strong>Family-business governance:</strong> three generations of Somany leadership (founder, Chairman-MD, Joint MD) balance legacy identity against a professionalising HR function.</li>
+                <li><strong>Financial:</strong> employee-benefit expense was already rising (₹963.6m → ₹1.12bn) before any new hiring strategy was even chosen — every option carries a direct P&amp;L consequence.</li>
+                <li><strong>Risk management:</strong> the "train" pathway's central risk — a trainee proving unsuitable after full-salary training — is precisely the scenario Kislik's "bad hire" article (this session) is built to address.</li>
+              </ul>
+            </div>
+          </details>
+        </article>
+
+        <article class="item" id="a4" data-type="article">
+          <div class="item-top">
+            <span class="badge article label">Article</span>
+            <span class="badge session label">Session 2</span>
+          </div>
+          <h3>What to Do When You Realize You Made a Bad Hire</h3>
+          <div class="cite">Harvard Business Review · Liz Kislik · August 22, 2018</div>
+          <p class="summary">Only 19% of new hires are considered fully successful, and 46% are deemed failures by 18
+          months. A five-step recovery playbook: have the direct conversation, try repair via feedback or
+          reassignment, quantify the true cost of keeping the hire, negotiate a graceful exit, and extract lessons for
+          the future.</p>
+          <details class="more">
+            <summary>Full digest: the five-step playbook, the "escalation of commitment" trap, all vignettes, and the exit-management scripts</summary>
+            <div class="more-body">
+              <h4>Opening statistic and framing</h4>
+              <p>Only <strong>19%</strong> of new hires are considered fully successful; by <strong>18 months, 46%</strong>
+              are deemed failures. This frames the core dilemma: is it worse to keep an employee who can't handle the
+              work and is damaging the team, or to publicly admit a significant hiring mistake? Kislik's thesis: it is
+              usually less costly to make a change, and the sooner the better — delay compounds damage.</p>
+
+              <h4>Step 1 — Prepare for a direct, uncomfortable conversation</h4>
+              <p>Rather than avoiding confrontation, level with the employee about performance concerns and invite
+              joint problem-solving. Suggested opener: "I want to talk about the last few weeks, and where we seem to
+              be on track and where we need to make some adjustments." Key insight: the employee may already sense the
+              same problems and welcome addressing them collaboratively.</p>
+
+              <h4>Step 2 — Try to repair via feedback or reassignment</h4>
+              <p><strong>Success case:</strong> a junior staffer hired for his "moxie, energy, and drive" began
+              broadcasting dissatisfaction and making careless mistakes within weeks. His manager gave careful
+              feedback, asked why the role felt unsatisfying, and — thanks to business growth and flexibility —
+              shifted him to another department with a better-fitting, more challenging role, supported by intensive
+              transition training. <strong>Failure case:</strong> a new VP hired from a different industry made
+              repeated commitments to apply feedback but "didn't understand the business model and seemed either
+              unable or unwilling to adapt her technical skills."</p>
+              <p><strong>The "escalation of commitment" trap:</strong> the tendency to resist giving up on a tough
+              situation even as evidence mounts it isn't working. Operating rule of thumb: if extensive feedback does
+              not yield significant personal effort almost immediately, and actual improvement within
+              <strong>three to six months</strong>, it's time to cut losses.</p>
+
+              <h4>Step 3 — Identify the current and future expense of keeping the hire</h4>
+              <p>Vignette: a senior executive from a very large public company joined a midsize family-owned client
+              with unrealistic expectations about resources and autonomous decision-making, "costing the business
+              dearly" — feedback didn't work, and reassignment wouldn't have solved the underlying mismatch. Cost
+              categories to weigh against replacement/onboarding cost: reduced productivity, employee disengagement
+              and turnover of <em>other</em> team members, increased interdepartmental conflict, missed deadlines and
+              declining work quality. A subtler indicator: extra pre- and post-meeting meetings, where colleagues
+              quietly compensate for the underperformer. A second vignette: a company restructured repeatedly trying
+              to fit an executive who made a good first impression but lacked necessary skills, and who bottlenecked
+              work and suppressed innovation — only after her removal did colleagues "step up to build bridges,"
+              showing the true cost of a bad hire is often invisible until after departure.</p>
+
+              <h4>Step 4 — Make the case for an exception to the typical exit plan</h4>
+              <p>If the relationship can't be salvaged, aim for the smoothest transition possible. First try to
+              negotiate a mutually beneficial exit — an honest conversation gives the employee a sense of control
+              while letting the manager publicly support the team and search for a replacement. Suggested script:
+              "I appreciate your telling me how concerned you are, and the current situation is having a negative
+              impact on the team, too, so I wonder if we can work this out in a way that benefits everyone." (Kislik
+              explicitly notes: check with HR before doing this.) If a surprise termination is unavoidable, be direct:
+              "As we've discussed several times, someone in your role needs to be able to accomplish these tasks and
+              goals successfully, and you haven't been able to do that. So unfortunately, we're going to have to
+              terminate your employment as of such-and-such date." <strong>Severance and outplacement</strong>,
+              even outside standard policy, signal good faith to the departing employee and the remaining team —
+              except where the employee misrepresented their skills or has ethical/behavioural problems.</p>
+
+              <h4>Step 5 — Learn from the mistake and move quickly</h4>
+              <p>It's painful for everyone when a hire goes wrong, so managers should extract lessons to avoid
+              repeating the mistake — critical because the <em>replacement</em> hire must succeed. Acting
+              deliberately but quickly benefits the departing employee too (more likely to still have other options
+              or return to a prior role) and keeps the manager's candidate slate viable.</p>
+
+              <h4>Practical implications for TS-ADR</h4>
+              <p>Bad hires are common and costly, making selection/retention quality a genuine strategic risk. Delay
+              increases total cost across productivity, morale and reputational/legal exposure. Managers must fight
+              their own escalation-of-commitment bias with a hard, time-boxed test (3–6 months). Exit management
+              should preserve dignity except where trust has been broken. This directly informs Somany Ceramics'
+              "train" pathway: what happens if a trained recruit, after a full-salary program, still doesn't work
+              out?</p>
+            </div>
+          </details>
+        </article>
+
+        <article class="item" id="a5" data-type="article">
+          <div class="item-top">
+            <span class="badge article label">Article</span>
+            <span class="badge session label">Session 2</span>
+          </div>
+          <h3>Opportunities and Risks of Artificial Intelligence in Recruitment and Selection</h3>
+          <div class="cite">International Journal of Organizational Analysis · Olajide Ore &amp; Martin Sposato · 2021</div>
+          <p class="summary">Ten interviews with experienced recruiters (average 10 years' experience) at a Fortune
+          500 multinational manufacturer surface real opportunity — automated screening, richer candidate experience,
+          employer branding — alongside genuine fear and distrust: job displacement, loss of the "human touch," and
+          algorithmic bias baked in from non-representative data.</p>
+          <details class="more">
+            <summary>Full digest: methodology, all five themes, and every REC1–REC10 verbatim quote</summary>
+            <div class="more-body">
+              <h4>Purpose and methodology</h4>
+              <p>Qualitative, exploratory study via face-to-face, semi-structured, in-depth interviews with
+              <strong>10 professional recruiters</strong> at an unnamed Fortune 500 manufacturing MNC (90,000+
+              employees globally, offices in 70 countries, manufacturing in 200 countries; 50% of headcount US-based).
+              Recruiter tenure ranged 1–11 years (mean 6); recruitment experience 4–22 years (mean 10). Thematic
+              analysis followed Braun and Clarke's (2006) six-phase process; recruiters coded REC1 through REC10.
+              Central research question: "What are the opportunities and risks that will be presented if AI
+              technology is introduced for recruitment and selection?" Emergent themes: Opportunities → data
+              analytics, candidate experience, employer branding; Risks → fear, distrust.</p>
+
+              <h4>Opportunity 1 — Data analytics</h4>
+              <p>AI/ML tools model historical hiring decisions to screen and rank candidates, and software (Ideal,
+              Arya, Talent Genie) scans job boards and social/professional networks to reach passive job seekers.</p>
+              <blockquote>"Maybe, with AI automatically screening the CVs in the system and then saying that this is
+              the best-qualified person for the job, you get a better hiring decision." (REC2)</blockquote>
+              <blockquote>"If AI could mine the information in the system and recognise the required keywords and
+              then rank the best candidates for me, that would be ideal." (REC5)</blockquote>
+              <blockquote>"If the opportunity were there to preload questions and have a system that could pre-screen
+              candidates based on their answers and then automatically send feedback too, it would be very useful."
+              (REC8)</blockquote>
+
+              <h4>Opportunity 2 — Candidate experience</h4>
+              <p>Large application volumes limit recruiters' ability to engage candidates individually; AI is seen as
+              a way to preserve positive candidate perception at scale.</p>
+              <blockquote>"We would really be able to focus on the candidate experience by making use of data
+              analytics… to provide candidates with a first-class experience when engaging with the organization."
+              (REC6)</blockquote>
+              <blockquote>"AI will allow us to take advantage of the free time that we will have so that we can
+              improve the candidate experience." (REC10)</blockquote>
+
+              <h4>Opportunity 3 — Employer branding</h4>
+              <blockquote>"I feel that we will be more engaged with employer branding initiatives because that is
+              really where the competition lies. The war for talent will be to focus on attracting candidates in
+              terms of what our company can offer to them and the kind of culture that we have." (REC3)</blockquote>
+              <blockquote>"I think AI would really allow us to have an opportunity to positively market our core
+              company values to attract candidates." (REC7)</blockquote>
+
+              <h4>Risk 1 — Fear</h4>
+              <p>Fear concerns AI reliability/accuracy, data-privacy anxieties, discrimination potential, and loss of
+              the "human touch" or displacement of human recruiters.</p>
+              <blockquote>"I am worried because we don't know what the limit of AI is, so there will be challenges
+              around the privacy of people's personal data… people have the right to have their private lives."
+              (REC2)</blockquote>
+              <blockquote>"With the introduction of AI, the loss of human interaction in the process is something
+              that the MNC and the wider society should really be concerned about." (REC4)</blockquote>
+              <blockquote>"We could face ethical issues because of discrimination, mainly because I also think AI has
+              its own potential for bias, and this is a big issue for me." (REC7)</blockquote>
+
+              <h4>Risk 2 — Distrust</h4>
+              <p>Centres on accuracy/reliability and the possibility that AI perpetuates or amplifies human bias.</p>
+              <blockquote>"There can be biases in how the algorithms are programmed, so if the person who is feeding
+              information to the AI is discriminating against certain people or groups of people, then AI would do
+              the same." (REC6)</blockquote>
+              <blockquote>"There's no standard way to write a CV, so potentially good candidates may not be screened
+              correctly if they don't have the right keywords on their CV. So, I would not trust AI to be able to
+              find those good candidates who do not know how to write a good CV." (REC10)</blockquote>
+
+              <h4>Literature threads underpinning the risk theme</h4>
+              <p>Cappelli (2001, p.144) warns screening technology could "reject a disproportionate number of
+              underrepresented groups, including women, minority ethnics, disabled people and workers older than
+              forty years of age." Hurlburt (2017) warns of coders embedding cultural/personal bias into algorithms.
+              Žliobaitė and Custers (2016) note algorithms can discriminate "even if the computing process is 'fair
+              and well-intentioned'" due to biased or non-representative training data. Counter-view — Housman (2016):
+              algorithmic selection could actually reduce bias, given recruiters' natural tendency to hire people
+              similar to themselves.</p>
+
+              <h4>Discussion and conclusions</h4>
+              <p>AI promises to mitigate bias but could equally exacerbate it via embedded human bias in training
+              data. AI's efficiency gains free recruiters for strategic work, better candidate experience and
+              stronger employer branding — but the authors warn against a "blind faith" approach that risks
+              irreparable brand damage and discrimination-related fines. All ten recruiters believed human
+              interaction will always be needed; the paper's conclusion is that recruiters should become "AI
+              advocates," not resisters, repositioning themselves as leaders of AI-enabled transformation.</p>
+            </div>
+          </details>
+        </article>
+
+        <article class="item" id="a6" data-type="article">
+          <div class="item-top">
+            <span class="badge article label">Article</span>
+            <span class="badge session label">Session 2</span>
+          </div>
+          <h3>The Make‑Versus‑Buy Decision: Deciding Whether to Hire Internally or From the Outside</h3>
+          <div class="cite">Excerpted from <em>Talent on Demand</em>, Harvard Business Press · Peter Cappelli · 2008</div>
+          <p class="summary">Reframes talent management as an operations-research "newsvendor problem": the real
+          question isn't make vs. buy, but which forecasting error — overshooting or undershooting talent supply —
+          costs more, since idle "benched" talent is usually a bigger flight risk than a temporary shortfall. Offers
+          four diagnostic questions and a real-options framework for deciding the right blend.</p>
+          <details class="more">
+            <summary>Full digest: the IT boom-bust history, the wage-value model, mismatch costs, the four diagnostics, and the worked real-options example</summary>
+            <div class="more-body">
+              <h4>Talent management as supply-chain management</h4>
+              <p>Cappelli's central analogy: failing to systematically manage talent is like failing to manage a
+              supply chain — but the stakes are higher, since a quitting/retiring employee can lose clients or stall
+              work. The "bumping problem": a typical poor response to a vacancy — "does anyone here can take over?" —
+              creates a chain reaction of internal moves (citing Diane Rothbard Margolis's 1970s finding that a single
+              vacancy triggered five additional job changes at one company), each risking placing someone in a role
+              they're unprepared for. Outside hiring avoids bumping but leaves roles vacant during search, is
+              expensive, and blocks internal promotion paths.</p>
+
+              <h4>The IT industry boom-bust cautionary tale</h4>
+              <p>Traditional, planning-heavy firms (IBM, Hewlett-Packard, Sperry, Univac, and Route 128 firms like
+              Wang, Data General, DEC) relied on internal development; 1990s Silicon Valley firms relied on outside
+              hiring, luring talent with stock options — and beat Route 128 firms partly because they could hire
+              talent away without upfront development investment (citing Saxenian's <em>Regional Advantage</em>).
+              Real wages for IT grads peaked in 1986, then declined amid the 1991 recession; IT-degree enrolment fell
+              through the mid-1990s just as the market then exploded into a red-hot mid-90s talent shortage.
+              <strong>Software engineer turnover averaged ~40% per year.</strong> IT-major enrolment rebounded sharply
+              (+40% in 1996–97, +39% in 1997–98) — but the market crashed in 2001 just as this cohort graduated,
+              creating a talent surplus. Only <strong>52%</strong> of civil engineering graduates stayed in that field
+              20 years post-graduation versus just <strong>19%</strong> of computer science graduates; a George Mason
+              study found IT workers twice as likely to change careers as other occupations. Age-bias evidence: an
+              Information Week survey found only <strong>2%</strong> of IT managers would hire someone with 10+
+              years' experience; a Network World survey found only <strong>13%</strong> of 20–30-year-olds would hire
+              anyone over 40.</p>
+
+              <h4>The swing back to internal development</h4>
+              <p>By the late 1990s many employers concluded pure outside hiring wasn't working. <strong>The
+              Co-Operative Group</strong> had been filling up to 80% of executive vacancies via outside search; CEO
+              Martin Beaumont stated: "Our goal is to get to the point where 70 percent of those appointments are
+              internal" — a near-total reversal.</p>
+
+              <h4>The newsvendor problem and mismatch costs</h4>
+              <p>Cappelli imports the classic operations-research "newsvendor problem": a forecast will never be
+              perfect, and firms face asymmetric costs — too little talent means unfilled roles and lost business;
+              too much means an expensive, underused "human capital supply closet." Unlike physical inventory, excess
+              talent <strong>can walk away, taking your training investment with it</strong> — an employee "on the
+              bench" is primed to job-hunt, especially once a competitor offers immediate use of her skills.</p>
+              <p>Supporting evidence: the <strong>Towers Perrin 2006 global survey (86,000 employees)</strong> found
+              15% actively trying to leave and 43% open to other opportunities; career development/advancement was
+              the leading driver of both retention and engagement. Watson-Wyatt studies found one of the best
+              predictors of turnover was whether an employee had <em>recently received training</em> — trained
+              employees were more likely to leave, poached by competitors who benefit without paying for the training.
+              Wharton students reported they would wait only an average of <strong>10 months</strong> for a
+              development opportunity before concluding advancement was blocked and moving on. Sidebar: GE's famous
+              talent-development machine produced so many capable leaders (7 former GE HR executives left to head HR
+              elsewhere, 1998–2000) that Cappelli reframes this celebrated fact as potentially representing
+              <em>excess</em> talent inventory — GE effectively subsidises other firms' leadership needs.</p>
+
+              <h4>The wage-value model and the 1970s/1980s crisis</h4>
+              <p>The classic internal-labour-market model: employee value contribution rises over a career (thanks to
+              training investment) while employment cost is set by outside market wages and engineered upward mainly
+              via promotions (the Hay Company's "Hay System" of job evaluation). Three career phases: early years
+              (employer invests, cost exceeds value), middle years (value rises faster than pay, employer recoups
+              investment), late career (seniority pay plus performance plateau means employer pays more than value
+              received). This explains the 1970s crisis: too many managers were in the pipeline for too few roles once
+              growth slowed. The 1980s model broke down as employers began hiring experienced outside workers who
+              could be paid more (no training investment to recoup), forcing training employers into a no-win choice:
+              raise wages or lose staff. Executive compensation escalation compounded this: average US CEO pay rose
+              from $1.3 million (1993) to $2.5 million (2003) — a 7.1% annual increase, more than double general wage
+              growth — meaning executives increasingly capture the returns on their own development rather than the
+              firm doing so.</p>
+
+              <h4>The make-or-buy choice: not binary, but a portfolio decision</h4>
+              <p>Employer-provided training rates fall when unemployment rises (surplus outside labour makes hiring
+              cheaper than developing). Firms with proprietary technology or a strong impenetrable culture lean
+              "make"; firms needing wholly new skills or deliberate culture change must "buy" — e.g., the Nuclear
+              Regulatory Commission directing firms with safety problems to hire new managers from the Navy
+              specifically to change culture. Cost structure: internal development front-loads costs but the
+              advantage grows over tenure; external hires cost little upfront but carry higher ongoing market-rate pay
+              — buying's advantage is greatest for short-term/uncertain needs and dissipates over time.</p>
+
+              <h4>The four diagnostic questions</h4>
+              <ol>
+                <li><strong>How long will you need the talent?</strong> Longer need → easier to recoup development investment → lean "make."</li>
+                <li><strong>Is there a learnable skill hierarchy?</strong> More hierarchy → easier to develop internally → lean "make."</li>
+                <li><strong>How important is preserving vs. changing culture?</strong> Preserve culture → "make"; want deliberate change → "buy" (though the direction of change from multiple simultaneous outside hires can be hard to control).</li>
+                <li><strong>How accurate is your demand forecast?</strong> Less certainty → higher risk of internal development → lean "buy."</li>
+              </ol>
+              <p>Implication: developing talent cost-effectively requires scale and a reasonably predictable product
+              market — explaining why talent-development-famous firms tend to be large, functionally organised, in
+              industries with long product cycles (oil exploration, pharmaceuticals). IBM found itself with an
+              oversupply in its high-potential program and cut it in half to rebalance toward outside hiring.
+              "Buy" also extends to leasing employees via staffing agencies and outsourcing — the contractor absorbs
+              supply-side risk, but the client still bears demand-forecast risk and pays a premium: "outsourcing
+              offers no free lunch for employers."</p>
+
+              <h4>Mismatch costs — asymmetric, not symmetric</h4>
+              <p>The old "Organization Man" era worried only about falling short; the modern challenge requires
+              balancing both directions. Undershoot costs have <em>fallen</em> (gaps filled via lateral/outside
+              hiring); overshoot costs have <em>risen</em> (benched employees are retention risks, and "excess" talent
+              looks like "fat" to restructuring-minded managers — the line between "fat" and "a deep bench" is, in
+              Cappelli's words, "in the eye of the beholder"). Sidebar: <strong>Unilever India</strong> — a model
+              internal-promotion employer since the 1950s, running a "listers" fast-track program and a three-candidate
+              promotion tournament (winner gets the job, runner-up an alternative assignment, third can leave). Around
+              2000, restructuring flattened the org pyramid and slowed advancement, but high relative pay made
+              executives reluctant to quit — so by 2004 the division had 1,400 managers, up from 1,100 in 2000, even
+              as demand had declined; Unilever ultimately transferred the surplus managers to its international
+              operations.</p>
+
+              <h4>Estimating talent demand — practical method</h4>
+              <p>Stop obsessing over a single point estimate ("we'll need exactly 100 programmers"); instead assess
+              the cost consequences of both overshoot and undershoot. Ask: what odds would you take that actual demand
+              will be within 10% either way of forecast? What would a 10% shortfall cost to cover via outside hiring?
+              What would a 10% overshoot cost in idle time and retention? Worked example: if overshoot risk exceeds
+              undershoot risk for 100 needed programmers, develop fewer internally (e.g., 90) and hire the shortfall
+              (~10) externally; if the estimate is more of a guess, develop only ~60 and hire the rest. <strong>Zensar
+              Technologies</strong> (Vivek Gupta, Senior VP) initially undershot internal development fearing
+              retention problems, then switched to deliberately overshooting once the labour market tightened and
+              outside hiring became harder — because undershooting had become the costlier error.</p>
+
+              <h4>Real options framework</h4>
+              <p>Borrowing finance's real-options logic — the value of preserving the right (not obligation) to act
+              later — applied to talent: is it worth maintaining idle capability now because of its option value
+              later? Worked example: retaining 2 key recruiters for a year with no current workload costs $100,000;
+              probability business picks up enough to need them: 10%; if it does, having them in place versus
+              rebuilding from scratch saves an estimated $4.2 million against a $1 million full build-out cost — net
+              benefit if exercised = $3.2 million; expected value of the option = 10% × $3.2M = <strong>$320,000</strong>,
+              which exceeds the $100,000 retention cost, so retaining the recruiters is worthwhile even with only a
+              1-in-10 chance of needing them.</p>
+
+              <h4>Concluding synthesis</h4>
+              <p>Neither pure internal development nor pure outside hiring works as a standalone strategy. The right
+              approach is an explicit, quantified portfolio — blending internal development, outside hiring,
+              leasing/temp staffing and outsourcing — guided by the four diagnostic questions, explicit attention to
+              asymmetric mismatch costs (oversupply now typically costlier than undersupply), and a real-options lens
+              for preserving capability against uncertain future need. The chapter reframes talent management as a
+              risk-management/operations-research problem, not a purely developmental or cultural one.</p>
+            </div>
+          </details>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ======================================================= -->
+    <!-- ============ SESSION 3 ============ -->
+    <!-- ======================================================= -->
+    <section class="session-section" id="s3">
+      <div class="section-head">
+        <h2>Session 3 — People Analytics &amp; the Future of Jobs</h2>
+        <span class="count label">3 items</span>
+      </div>
+      <p class="section-dek">The WEF's 2030 jobs and skills forecast, the conceptual machinery behind predictive HR
+      analytics adoption, and a practitioner's end-to-end talent-acquisition technology stack — three views on turning
+      workforce data into strategic advantage.</p>
+      <div class="card-grid">
+
+        <article class="item" id="a7" data-type="article">
+          <div class="item-top">
+            <span class="badge article label">Report</span>
+            <span class="badge session label">Session 3</span>
+          </div>
+          <h3>The Future of Jobs Report 2025</h3>
+          <div class="cite">World Economic Forum, Insight Report · Centre for the New Economy and Society · January 2025</div>
+          <p class="summary">A survey of 1,000+ employers (14M+ workers, 55 economies) projects 170 million jobs
+          created and 92 million displaced by 2030 (net +78 million), with skills gaps cited by 63% of employers as
+          the top barrier to transformation — ranking #1 in 52 of 55 economies surveyed.</p>
+          <details class="more">
+            <summary>Full digest: methodology, all five macrotrends, jobs/skills tables, workforce-strategy barriers, DEI and wage data, and the India-specific findings</summary>
+            <div class="more-body">
+              <h4>Overview and methodology</h4>
+              <p>The fifth edition of WEF's biannual report, built on the Future of Jobs Survey (late 2024) covering
+              <strong>1,000+ employers representing 14.1 million workers across 22 industry clusters and 55
+              economies</strong>, enriched with data from ADP, Coursera, Indeed and LinkedIn. Projects labour-market
+              change over 2025–2030. Macro backdrop: global growth projected at 3.2% for 2025; global unemployment at
+              4.9% (lowest since 1991); youth unemployment 13% globally; the ILO "jobs gap" measure implies 402
+              million additional jobs needed in 2024.</p>
+
+              <h4>The five macrotrends (share of employers expecting each to transform their business by 2030)</h4>
+              <ol>
+                <li><strong>Broadening digital access — 60%</strong> (top overall trend, a critical enabler for all other technology-driven transformation)</li>
+                <li>Rising cost of living / inflation — 50%</li>
+                <li>Climate mitigation investment — 47%</li>
+                <li>Increased focus on labour and social issues — 46%</li>
+                <li>Slower economic growth — 42%</li>
+                <li>Climate adaptation investment — 41%</li>
+                <li>Ageing and declining working-age populations — 40%</li>
+                <li>Increased geopolitical division and conflicts — 34%</li>
+                <li>Growing working-age populations — 24%</li>
+                <li>Increased restrictions to global trade and investment — 23%</li>
+              </ol>
+              <p>These map to five overarching categories: technological change, economic uncertainty, green
+              transition, demographic shifts, and geoeconomic fragmentation.</p>
+
+              <h5>Technological change</h5>
+              <p>Top technologies cited: <strong>AI and information processing (86%)</strong>, robots and autonomous
+              systems (58%), energy generation/storage/distribution (41%). AI investment has risen nearly eightfold
+              since ChatGPT's November 2022 release. Global robot density reached <strong>162 units per 10,000
+              employees in 2023</strong> — double the level seven years earlier — with 80% of installations
+              concentrated in China, Japan, the US, South Korea and Germany. India and the US lead GenAI training
+              enrolments (Coursera data), though in India corporate sponsorship — not individual initiative — drives
+              the surge.</p>
+
+              <h5>Economic uncertainty</h5>
+              <p>2025 growth projected at 3.2%, with downward revisions concentrated in low-income economies. Services
+              inflation remains roughly twice pre-pandemic levels, acute in low-income countries facing food-price
+              shocks.</p>
+
+              <h5>Geoeconomic fragmentation</h5>
+              <p>WTO: trade restrictions <strong>doubled between 2020 and 2024</strong>; import restrictions reached
+              ~10% of global imports in 2024. IMF estimates potential global output losses of 0.2%–7% of GDP from
+              trade fragmentation. Geoeconomically affected employers are more likely to <strong>re-shore</strong>
+              than off-shore (e.g., trade-restriction-affected firms: 8.7% off-shore vs. 14.5% re-shore).</p>
+
+              <h5>Green transition</h5>
+              <p>Green-skill acquisition rose 12% globally (2022–2023) but green-skill job postings rose ~22% in the
+              same period — demand outpacing supply. Green-skilled workers are hired at a consistently higher rate
+              than the overall labour market.</p>
+
+              <h5>Demographic shifts</h5>
+              <p>Two simultaneous global shifts: ageing/declining working-age populations in high-income economies,
+              and expanding populations in lower-income economies (India, Sub-Saharan Africa). The global working-age
+              population split, currently 49% lower-income/51% higher-income, is projected to shift to
+              <strong>59% lower-income by 2050</strong>. World Bank: over the next decade, <strong>1.2 billion young
+              people</strong> in emerging economies will reach working age, but these economies are projected to
+              create only <strong>420 million additional jobs</strong> — risking ~800 million young people in
+              economic uncertainty.</p>
+
+              <h4>Jobs outlook</h4>
+              <p>Structural labour-market churn equals <strong>22% of today's 1.2 billion formal jobs</strong> over
+              2025–2030: <strong>170 million new jobs created (14%)</strong>, <strong>92 million displaced (8%)</strong>,
+              net growth of <strong>78 million (7%)</strong>. Fastest-growing roles (percentage terms): Big Data
+              Specialists, FinTech Engineers, AI and Machine Learning Specialists, Software and Applications
+              Developers, Security Management Specialists. Fastest-declining roles: Data Entry Clerks, Bank Tellers,
+              Postal Service Clerks, Cashiers, Administrative Assistants and Executive Secretaries — notably, Graphic
+              Designers and Legal Secretaries appear in decline for the first time in the report's history, read as
+              evidence of GenAI's growing capacity for knowledge work. Largest absolute job growth: Farmworkers and
+              Agricultural Labourers (+35 million by 2030), followed by Delivery Drivers, Construction Workers,
+              Salespersons; largest absolute declines concentrate in clerical/secretarial roles.</p>
+              <p>By macrotrend: broadening digital access creates the most and destroys the most jobs of any single
+              trend (+19M created/–9M displaced); robotics is the largest net job displacer (net –5M); slower
+              economic growth is the only macrotrend that is a net job destroyer overall.</p>
+              <p><strong>Automation vs. augmentation:</strong> today, tasks split 47% human-only, 22%
+              technology-only, 30% combination. By 2030, employers expect a near-even three-way split (~33–34%
+              each). Of the ~15-point reduction in human-only task share, ~82% is attributable to automation and
+              ~19% to augmentation/collaboration.</p>
+
+              <h4>Skills outlook</h4>
+              <p>Employers expect <strong>39% of workers' core skills to change or become outdated by 2030</strong> —
+              down from 44% in 2023 and a pandemic-era peak of 57% in 2020. Top core skills for 2025: analytical
+              thinking (69%), resilience/flexibility/agility (67%), leadership and social influence (61%), creative
+              thinking (57%), motivation and self-awareness (52%). Fastest-growing skills 2025–2030 (net increase):
+              <strong>AI and big data (+87)</strong>, networks and cybersecurity (+70), technological literacy (+68),
+              creative thinking (+66), resilience/flexibility/agility (+66). The largest net decline: <strong>manual
+              dexterity, endurance and precision (–24)</strong> — the first time physical/manual skills have shown a
+              net negative trajectory. Of 2,800+ granular skills assessed for GenAI substitution capacity (Indeed/
+              GPT-4o analysis), zero scored "very high capacity" for substitution and 69% scored "low" or "very low" —
+              skills with no substitution potential include empathy/active listening, sensory-processing, and manual
+              dexterity. Training data: 50% of the global workforce has completed training as part of learning/
+              development initiatives (up from 41% in 2023); if the workforce were 100 people, 41 would not need
+              significant training by 2030, 29 could be upskilled in-role, 19 upskilled and redeployed, and 11 would
+              be unlikely to receive needed training (at risk).</p>
+
+              <h4>Workforce strategies and barriers</h4>
+              <p><strong>Top barriers to transformation:</strong> skills gaps in the labour market (63%, ranked #1 in
+              52 of 55 economies), organisational culture and resistance to change (46%), outdated/inflexible
+              regulation (39%), inability to attract talent to the industry (37%). <strong>Talent-outlook net
+              expectations:</strong> talent availability when hiring: net –13% (only 29% expect improvement, down
+              sharply from 39% in 2023); talent development: net +66%; talent retention: net +25% (down from 53% in
+              2023). <strong>Planned workforce strategies:</strong> upskill workforce (85%, top priority across all
+              geographies), accelerate automation (73%), hire staff with new skills (70%), augment workforce with new
+              technologies (63%). <strong>Practices to improve talent availability:</strong> supporting employee
+              health and well-being jumped from 9th place (2023) to <strong>1st (64%, 2025)</strong>; tapping into
+              diverse talent pools rose from ~10% to <strong>47%</strong> — a roughly fourfold increase.</p>
+
+              <h4>DEI and wages</h4>
+              <p><strong>83% of employers now have DEI measures in place</strong> (up from 67% in 2023), near-universal
+              among firms with 50,000+ employees (95%). Priority DEI groups: women (76%), workers with disabilities
+              (56%), Gen Z under 25 (52%). On wages: 52% of employers expect wages to grow as a share of revenue by
+              2030; smaller firms (&lt;1,000 employees) are the most bullish (57%). Skills-assessment approaches:
+              work-experience evaluation still dominant (81%); skills/pre-employment tests (48%); university degree
+              requirement (43%) — signalling gradual de-emphasis of credentials, since 14 of the 15 fastest-growing
+              jobs still nominally require a degree while only 7 of the 15 <em>largest</em>-growing jobs require an
+              advanced one.</p>
+
+              <h4>India-specific findings</h4>
+              <p>India's primary shaping trends: increased digital access, geopolitical tensions, and
+              climate-mitigation efforts. Indian employers are investing heavily in AI, robotics and energy
+              technologies and are expected to outpace global adoption in specific technologies — 35% expect
+              semiconductors/computing to transform operations and 21% expect quantum/encryption to do so, both above
+              global shares. India's fastest-growing roles (Big Data Specialists, AI/ML Specialists, Security
+              Management Specialists) align closely with these trends. To address talent needs, Indian employers place
+              unusually high emphasis on <strong>tapping diverse talent pools (67% vs. 47% globally)</strong> and
+              <strong>skills-based hiring / removing degree requirements (30% vs. 19% globally)</strong> — both
+              substantially above global averages, positioning India as a leading adopter of skills-first hiring.</p>
+
+              <h4>Conclusion / exam takeaways</h4>
+              <p>The report frames 2025–2030 as a period of net job growth (+7%) but severe skills churn (39%) and
+              negative talent-availability sentiment (–13% net) — jobs are being created, but employers doubt their
+              ability to find the right people. Skills gaps (63%) dominate as the strategic barrier, ahead of capital,
+              regulation, or culture, reframing talent strategy (upskilling, skills-based hiring, diverse pools) as
+              central to business transformation. GenAI shows near-zero current capacity to replace deeply human/
+              physical skills, reframing resilience, leadership, creative thinking and empathy as durable
+              differentiators.</p>
+            </div>
+          </details>
+        </article>
+
+        <article class="item" id="a8" data-type="article">
+          <div class="item-top">
+            <span class="badge article label">Article</span>
+            <span class="badge session label">Session 3</span>
+          </div>
+          <h3>Predictive HR Analytics and Talent Management: A Conceptual Framework</h3>
+          <div class="cite">Journal of Management Analytics · R. Navodya Gurusinghe, Bhadra J. H. Arachchige &amp; Dushar Dayarathna · 2021</div>
+          <p class="summary">Fuses the Technology-Organisation-Environment framework with Resource-Based Theory to
+          explain what it actually takes to move from basic HR reporting to genuine predictive capability — and why a
+          data-driven culture, not just technology spend, is the real bottleneck.</p>
+          <details class="more">
+            <summary>Full digest: the TOE+RBT model, all seven adoption antecedents, Bersin's maturity model, regulatory comparisons, and the talent-outcome propositions</summary>
+            <div class="more-body">
+              <h4>Purpose and theoretical foundations</h4>
+              <p>A conceptual (non-empirical) paper — "possibly the first" to propose a theoretical model linking the
+              antecedents of HR-analytics adoption, the process of building <strong>Predictive HR Analytics (PHRA)
+              capability</strong>, and talent-management outcomes, moderated by data-driven organisational culture. It
+              fuses the <strong>Technology-Organisation-Environment (TOE) framework</strong> (Tornatzky &amp;
+              Fleischer, 1990) — three contexts (technological, organisational, environmental) shaping adoption —
+              with <strong>Resource-Based Theory</strong> (Barney, 1991) — sustainable advantage from resources that
+              are Valuable, Rare, Inimitable, and Organised (VRIO) — because TOE explains adoption but not how
+              analytics becomes a strategic capability, while RBT explains capability-building but ignores external/
+              regulatory factors.</p>
+
+              <h4>The motivating statistics</h4>
+              <p>Citing Deloitte's 2017 Global Human Capital Trends survey: <strong>71%</strong> of companies see HR
+              analytics as a pressing concern, yet only <strong>8%</strong> report having usable data, only
+              <strong>9%</strong> believe they understand which talent factors drive performance, and just
+              <strong>15%</strong> have implemented HR/talent scorecards for line managers — illustrating an
+              "analytics paradox" where investment and interest far outpace actual capability.</p>
+
+              <h4>The seven adoption antecedents, across three TOE contexts</h4>
+              <p><strong>Technological context — (1) Technology competence:</strong> infrastructure plus IT-skilled
+              staff. Aral et al. (2012) found no performance effect from HR analytics without genuine Human Capital
+              Management (HCM) software. Kaur &amp; Fink (2017), from 22 interviews across 16 organisations, found the
+              most-used tools were R (94%), Tableau (83%), Python (50%), SPSS (44%), Excel (44%) — standard HRIS
+              cannot support advanced statistics/visualisation. Named AI tools: IBM's Watson Talent, Intel's Saffron,
+              HireVue's video-analytics platform.</p>
+              <p><strong>Organisational context — (2) Basic resources</strong> (sufficient financial investment and
+              time, since HR analytics rarely yields immediate ROI); <strong>(3) Analytical competencies of HR
+              personnel</strong> (ability to build causal logic, use appropriate statistical tests, and embed
+              insights into decisions — most HR staff are not trained data scientists but need enough
+              methodology/statistics literacy to persuade sceptical executives); <strong>(4) Top management
+              commitment</strong> (C-suite support supplies resources and a change-friendly environment; firms with
+              strong PHRA maturity are more likely to have a <strong>CHRO on the board</strong> or a people-analytics
+              Centre of Excellence reporting to the CEO); <strong>(5) HR-business strategic alignment</strong>
+              (analytics projects must connect to the firm's core value chain and be presented in business language,
+              not just HR metrics).</p>
+              <p><strong>Environmental context — (6) Regulatory support:</strong> a key cross-country comparison — in
+              the <strong>US</strong>, employee data collected at work is legally the company's property; in the
+              <strong>EU</strong>, organisations must justify why they need to collect employees' personal data; in
+              <strong>Canada</strong>, it is illegal to monitor employees' private emails. <strong>(7) Competitive
+              pressure</strong> (Porter &amp; Millar, 1985): if peer firms use HR analytics for talent management, a
+              firm feels urgency to adopt or risk losing competitive edge in the talent-shortage battle.</p>
+
+              <h4>Josh Bersin's (2016) four-stage maturity model</h4>
+              <ol>
+                <li><strong>Operational reporting — 56% of firms (2016).</strong> Basic metrics (headcount, turnover,
+                labour cost); data siloed, reporting reactive.</li>
+                <li><strong>Advanced reporting — 30% of firms.</strong> Both operational and advanced metrics;
+                reporting becomes proactive, embedded in daily operations, but still largely descriptive.</li>
+                <li><strong>Advanced analytics — 10% of firms.</strong> Statistical models supporting decisions;
+                the first stage adding genuine strategic value.</li>
+                <li><strong>Predictive analytics — the rarest stage.</strong> Enables scenario planning and proactive
+                risk mitigation — identifying future talent shortages, high-potential talent, and critical positions;
+                requires tools like R and dedicated data scientists.</li>
+              </ol>
+
+              <h4>Data-driven organisational culture — the moderating variable</h4>
+              <p>Defined as the extent to which organisational members at all levels make decisions based on data
+              insight. LaValle et al. (2011) and Ross et al. (2013) argue it is organisational culture — not data
+              quality or technology — that is usually why unproductive big-data projects fail; many firms still rely
+              on the "highest-paid person's opinion" (HiPPO) rather than data. Proposition: a firm can adopt analytics
+              tools without a data-driven culture, but cannot progress to true predictive capability without one.</p>
+
+              <h4>PHRA capability → talent management outcomes</h4>
+              <p>Talent management is decomposed into three lifecycle elements — <strong>acquisition</strong>
+              (attracting/hiring high-potential workforce), <strong>development</strong> (training/succession
+              planning), and <strong>retention</strong> (motivating/engaging talent) — each proposed to be positively
+              related to PHRA capability. PricewaterhouseCoopers (2020): <strong>74% of global CEOs</strong> cite "a
+              lack of availability of the right skills" as a concern, reinforcing the urgency for predictive tools.
+              The paper cites Walford-Wright &amp; Scott-Jackson's "Talent Rising" model (this session's third
+              reading) as direct empirical corroboration that a technology-driven talent-acquisition strategy
+              measurably improves key acquisition metrics.</p>
+
+              <h4>Implications and limitations</h4>
+              <p>Fills a gap Marler &amp; Boudreau (2017) identified — no theory-based prediction of relationships and
+              no data collected to evaluate them in HR analytics literature. Practical implications: guides which
+              resources/skills are needed, how to build the case for top-management buy-in, and how analytics
+              vendors should target adoption antecedents. The model remains untested empirically and does not
+              examine the ultimate link from data-driven talent decisions to overall organisational performance.</p>
+            </div>
+          </details>
+        </article>
+
+        <article class="item" id="a9" data-type="article">
+          <div class="item-top">
+            <span class="badge article label">Article</span>
+            <span class="badge session label">Session 3</span>
+          </div>
+          <h3>Talent Rising: People Analytics and Technology Driving Talent Acquisition Strategy</h3>
+          <div class="cite">Strategic HR Review · Gavin Walford‑Wright &amp; William Scott‑Jackson · 2018</div>
+          <p class="summary">A practitioner case study of "Talent Rising," an end-to-end recruitment technology stack
+          built to cut cost- and time-per-hire while raising quality of hire — automating routine screening while
+          keeping judgement-heavy steps (final interviews, offers) human-led.</p>
+          <details class="more">
+            <summary>Full digest: the diagnosed starting condition, the full process architecture, all four selection tools, and the closing "technology lust" caution</summary>
+            <div class="more-body">
+              <h4>Purpose and framing</h4>
+              <p>Proposes the "Talent Rising" model: a modular, "plug and play" technology stack designed for three
+              objectives that map onto Porter's (1985) generic strategies — reduce time to hire (innovation), reduce
+              cost per hire (cost leadership), and increase quality of hire (quality/differentiation). Framing quote
+              from Gerd Leonhard (2016): "humanity will change more in the next 20 years than in the previous 300."
+              The paper updates Michaels, Handfield-Jones &amp; Axelrod's "War for Talent" thesis for the digital era,
+              arguing candidate centricity is the new source of competitive advantage.</p>
+
+              <h4>The worker-to-retiree ratio statistic</h4>
+              <p>The 2015 McKinsey Global Growth Model study (2005–2015) found <strong>three workers for every
+              retiree</strong>; the authors project this ratio will fall to <strong>1:1 within a decade</strong> —
+              shrinking the candidate pool dramatically by 2025, compounded by demand for specialised talent in
+              technology and life sciences. Implication: candidates, not employers, hold the power in the hiring
+              relationship, making candidate experience a critical differentiator.</p>
+
+              <h4>Diagnosed starting-condition problems in talent-acquisition teams</h4>
+              <p>Ten recurring deficiencies identified across organisations studied: no clear vision; no Applicant
+              Tracking System; low engagement; no people analytics; no referral programme; high cost per hire
+              (over-reliance on agencies); long time to hire (manual handoffs); lower quality of hire (poor/no
+              assessments); poor trust with hiring managers; and no KPIs or Individual Development Plans for the
+              talent-acquisition team itself.</p>
+
+              <h4>People analytics and talent technology</h4>
+              <p>Defined: "People analytics uses data to inform management decisions, be it in talent acquisition,
+              retention, placement, promotion, compensation, or workforce and succession planning." Fewer than half
+              of HR leaders believe they successfully link people data to key business/financial data. Google, Best
+              Buy, P&amp;G and Sysco were already using sophisticated data analysis to remove guesswork from employee
+              management as early as 2010 (Davenport, Harris &amp; Shapiro, HBR). Talent technology is defined as
+              "the point where systems and processes of human resources management and technology intersect." A
+              quarter of organisations reported technology was already replacing some jobs internally; Gartner's 2014
+              prediction that Big Data/analytics would generate $3.7 trillion in products/services and 4.4 million
+              new jobs by 2015 is cited as validated.</p>
+
+              <h4>The Talent Rising process architecture</h4>
+              <p>Sourcing/candidate attraction — reaching passive candidates via LinkedIn and social platforms, with
+              candidates encouraged to build a "3D online portrait" (photos, recommendations, video, interactive
+              résumé) → candidate experience/concierge services (GPS guidance, interviewer background info,
+              geo-location beacon notifications, campus tours) → automated front-end selection tools → a Talent
+              Acquisition Review (governance checkpoint synthesising sourcing and assessment data) → onboarding.</p>
+
+              <h4>The four selection tools and their purposes</h4>
+              <ol>
+                <li><strong>Organisational culture-fit tool</strong> — for sifting: does the candidate fit the
+                culture?</li>
+                <li><strong>Cognitive ability assessments</strong> — for sifting: can they learn quickly and grow into
+                the role? The paper argues cognitive ability may be "the single most valuable assessment in the
+                talent acquisition process" for many roles.</li>
+                <li><strong>Video interviewing tools</strong> — for screening.</li>
+                <li><strong>Personality tools</strong> — for final-stage selecting.</li>
+              </ol>
+              <p>The paper cites Bock's (2015) <em>Work Rules!</em> (drawing on his experience as Google's SVP of
+              People Operations): hiring "doesn't matter who you are, where you're from or what school you went to" —
+              organisations should actively seek non-traditional candidates rather than screening on human bias.</p>
+
+              <h4>Predictive use of people analytics and Google's example</h4>
+              <p>Talent technology's greatest HR value is predictive: analysing both high- and low-performer
+              attributes builds a template for future hires — modelling underperformance is as valuable as modelling
+              excellence. The resulting "3D" candidate view — seen and heard, backed by factual assessment — is
+              described as democratic, impartial, and supportive of meritocracy. Google's People Analytics function is
+              the exemplar, measuring social skills, flexibility, emotional intelligence, initiative, attitude and
+              perseverance.</p>
+
+              <h4>Named quotes</h4>
+              <blockquote>Dan Shapero, LinkedIn's VP of Talent Solutions and Insights: "recruiting has always been an
+              art, but it's becoming a science."</blockquote>
+              <blockquote>Dr Brian Welle, Google's Director of People Analytics: "if we have an employee base that
+              reflects our [diverse] user base, we are going to better understand the needs of people all over the
+              world."</blockquote>
+
+              <h4>Risks/caveats and the closing "technology lust" caution</h4>
+              <p>Candidates with low computer skills could be disadvantaged by tech-heavy selection — the authors
+              reframe this as an acceptable filter for tech-based organisations, where "tech savvy" is itself a job
+              requirement. The talent-acquisition team's own skills must be developed to properly interpret assessment
+              outputs — technology adoption alone doesn't guarantee good hiring outcomes. The paper's closing caution:</p>
+              <blockquote>"There is a counterbalance for this lust for technology and people analytics… technology
+              initiatives should be considered in view of the human factor that is the real driver of long-term
+              success. People, not technology, are responsible for ensuring a steady progress toward the goal of
+              attaining organisational excellence… The tipping point is where futurism meets humanity, and in
+              attracting talent to an organisation, technology can make or break the talent connection."</blockquote>
+              <p>Practical payoff claimed: implementation produced "a significant improvement in all the key metrics
+              related to the talent acquisition process" and changed the recruiter/TA-team role from transactional
+              gatekeeper to internal strategic partner.</p>
+            </div>
+          </details>
+        </article>
+
+      </div>
+    </section>
+
+    <footer class="page-foot">
+      Digest of the TS‑ADR (Talent Strategy — Attraction, Development &amp; Retention) course pack, MBA‑II Term 4,
+      Indian Institute of Management, Udaipur. Compiled for reference from the ten Session 1–3 readings; full
+      elaborated summaries with stakeholder tables are available as separate Word documents per session.
+    </footer>
+  </main>
+</div>
+
+<script>
+  (function(){
+    var chips = document.querySelectorAll('.chip');
+    var items = document.querySelectorAll('article.item');
+    var sections = document.querySelectorAll('section.session-section');
+
+    function applyFilter(f){
+      items.forEach(function(it){
+        var show = (f === 'all') || (it.getAttribute('data-type') === f);
+        it.setAttribute('data-hide', show ? 'false' : 'true');
+      });
+      sections.forEach(function(sec){
+        var visible = sec.querySelectorAll('article.item[data-hide="false"], article.item:not([data-hide])').length;
+        sec.setAttribute('data-empty', visible === 0 ? 'true' : 'false');
+      });
+    }
+
+    chips.forEach(function(chip){
+      chip.addEventListener('click', function(){
+        chips.forEach(function(c){ c.setAttribute('aria-pressed','false'); });
+        chip.setAttribute('aria-pressed','true');
+        applyFilter(chip.getAttribute('data-filter'));
+      });
+    });
+  })();
+</script>
